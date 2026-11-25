@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1795507386207,
+      "tag": "0000_useful_thena",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795522403521,
+      "tag": "0001_futuristic_romulus",
+      "breakpoints": true
+    }
+  ]
+}

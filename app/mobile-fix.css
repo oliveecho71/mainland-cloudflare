@@ -1,0 +1,4 @@
+@media(max-width:780px){
+  .day:not(:has(.event)){display:none}
+  .calendar:not(:has(.event)){display:none}
+}

@@ -1,0 +1,10 @@
+.pathway .steps{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.course-editor .admin-panel{max-width:850px;margin-top:24px}
+.course-stage-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.course-stage-heading h3{margin:0}
+.course-stage-edit{border:1px solid var(--line);border-radius:9px;padding:16px;background:#fbfdfe}
+.course-stage-edit .form-two{margin-top:12px}
+.course-editor .primary{align-self:flex-start}
+.course-editor button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:780px){.pathway .steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:470px){.pathway .steps,.course-stage-edit .form-two{grid-template-columns:1fr}}
