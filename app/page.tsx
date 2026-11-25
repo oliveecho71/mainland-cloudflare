@@ -17,9 +17,9 @@ const sameMonth = (lesson: Lesson, month: Date) => lessonOccursInMonth(lesson.st
 async function get(scope: string): Promise<any> { const r = await fetch(`/api/portal?scope=${scope}`, { cache: "no-store" }); return r.ok ? r.json() : null; }
 async function post(data: Record<string, unknown>): Promise<any> { const r = await fetch("/api/portal", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }); const v: any = await r.json(); if (!r.ok) throw new Error(v.error || "操作失败"); return v; }
 
-function Login({ close, refresh }: { close: () => void; refresh: () => void }) {
+function Login({ close, refresh }: { close: () => void; refresh: () => Promise<{ admin: AdminData | null }> }) {
   const [mode, setMode] = useState("student-login"); const [phone, setPhone] = useState(""); const [invite, setInvite] = useState(""); const [password, setPassword] = useState(""); const [key, setKey] = useState(""); const [error, setError] = useState("");
-  async function submit(e: React.FormEvent) { e.preventDefault(); setError(""); try { await post({ action: mode, phone, invite, password, key }); refresh(); close(); } catch (e) { setError(e instanceof Error ? e.message : "登录失败"); } }
+  async function submit(e: React.FormEvent) { e.preventDefault(); setError(""); try { await post({ action: mode, phone, invite, password, key }); const session = await refresh(); if (mode === "admin-login" && !session.admin) throw new Error("登录已提交，但管理会话未生效，请刷新页面后重试"); close(); if (mode === "admin-login") requestAnimationFrame(() => document.getElementById("admin")?.scrollIntoView({ behavior: "smooth" })); } catch (e) { setError(e instanceof Error ? e.message : "登录失败"); } }
   return <div className="dialog-backdrop" onMouseDown={close}><div className="dialog" role="dialog" aria-modal="true" onMouseDown={e => e.stopPropagation()}><button className="icon-btn close" onClick={close} aria-label="关闭"><X/></button><h2>{mode === "admin-login" ? "管理端登录" : mode === "activate" ? "开通学员账号" : "学员登录"}</h2><p>{mode === "activate" ? "输入老师发给你的一次性邀请码。" : "登录后查看预约与课程详情。"}</p><form onSubmit={submit} className="form">
     {mode !== "admin-login" && <label>手机号<input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" required placeholder="报名使用的手机号"/></label>}
     {mode === "activate" && <label>邀请码<input value={invite} onChange={e => setInvite(e.target.value)} required/></label>}
@@ -92,7 +92,7 @@ function CourseIntroEditor({ value, refresh, say }: { value: CourseIntro; refres
 
 export default function Home() {
   const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1)); const [filter, setFilter] = useState("all"); const [lessons, setLessons] = useState<Lesson[]>([]); const [selected, setSelected] = useState<number | null>(null); const [me, setMe] = useState<{ student: Student; bookings: Booking[] } | null>(null); const [admin, setAdmin] = useState<AdminData | null>(null); const [intro, setIntro] = useState<CourseIntro>(defaultCourseIntro); const [dialog, setDialog] = useState(false); const [notice, setNotice] = useState(""); const [loading, setLoading] = useState(true);
-  const refresh = useCallback(async () => { const [pub, student, manager] = await Promise.all([get("public"), get("me"), get("admin")]); setLessons(pub?.lessons || []); setIntro(pub?.courseIntro || defaultCourseIntro); setMe(student); setAdmin(manager); setLoading(false); }, []);
+  const refresh = useCallback(async () => { const [pub, student, manager] = await Promise.all([get("public"), get("me"), get("admin")]); setLessons(pub?.lessons || []); setIntro(pub?.courseIntro || defaultCourseIntro); setMe(student); setAdmin(manager); setLoading(false); return { admin: manager as AdminData | null }; }, []);
   useEffect(() => { refresh(); }, [refresh]);
   const say = (s: string) => { setNotice(s); setTimeout(() => setNotice(""), 5000); };
   const visible = useMemo(() => lessons.filter(l => filter === "all" || l.kind === filter), [lessons, filter]);
