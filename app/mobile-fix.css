@@ -1,4 +1,28 @@
-@media(max-width:780px){
-  .day:not(:has(.event)){display:none}
-  .calendar:not(:has(.event)){display:none}
+@media (max-width: 780px) {
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .weekdays { display: grid; font-size: 12px; }
+  .weekdays span { padding: 6px 0; }
+  .day, .day:nth-child(7n), .day.outside {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    min-height: 68px;
+    padding: 5px 3px;
+    border-right: 1px solid var(--line);
+  }
+  .day:nth-child(7n) { border-right: 0; }
+  .day > span { width: auto; font-size: 12px; line-height: 1.2; }
+  .event { margin-top: 2px; padding: 3px 2px; border-left-width: 2px; }
+  .event strong {
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .event small { display: none; }
+  .detail-empty { min-height: 180px; }
 }
