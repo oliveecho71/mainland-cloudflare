@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
       const startTime = parseShanghaiDateTime(startsAt), endTime = parseShanghaiDateTime(endsAt);
       const capacity = Number(body.capacity);
       const status = clean(body.status, 20);
-      if (!title || !["expo", "project"].includes(kind) || !["draft", "open", "cancelled"].includes(status) || !Number.isInteger(capacity) || capacity < 1 || capacity > 5 || !startTime || !endTime || endTime <= startTime) return fail("请检查课程名称、时间、类型及1至5人的名额");
+      if (!title || !["expo", "project", "online"].includes(kind) || !["draft", "open", "cancelled"].includes(status) || !Number.isInteger(capacity) || capacity < 1 || capacity > 5 || !startTime || !endTime || endTime <= startTime) return fail("请检查课程名称、时间、类型及1至5人的名额");
       const values = [title, kind, startTime.toISOString(), endTime.toISOString(), clean(body.publicPlace, 80), clean(body.privatePlace, 150), clean(body.objective, 600), clean(body.privateBrief, 1000), capacity, status];
       if (body.id) {
         const confirmed = await (await db()).prepare("SELECT COUNT(*) AS n FROM bookings WHERE lesson_id=? AND status='confirmed'").bind(Number(body.id)).first<{ n: number }>();
